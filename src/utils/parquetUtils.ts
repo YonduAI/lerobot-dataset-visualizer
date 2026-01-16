@@ -1,4 +1,5 @@
 import { parquetRead, parquetReadObjects } from "hyparquet";
+import { getHfAuthHeaders } from "./hfAuth";
 
 export interface DatasetMetadata {
   codebase_version: string;
@@ -25,7 +26,8 @@ export interface DatasetMetadata {
 }
 
 export async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  const headers = getHfAuthHeaders();
+  const res = await fetch(url, { headers });
   if (!res.ok) {
     throw new Error(
       `Failed to fetch JSON ${url}: ${res.status} ${res.statusText}`,
@@ -43,7 +45,8 @@ export function formatStringWithVars(
 
 // Fetch and parse the Parquet file
 export async function fetchParquetFile(url: string): Promise<ArrayBuffer> {
-  const res = await fetch(url);
+  const headers = getHfAuthHeaders();
+  const res = await fetch(url, { headers });
   
   if (!res.ok) {
     throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);

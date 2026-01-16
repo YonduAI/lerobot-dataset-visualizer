@@ -2,6 +2,8 @@
  * Utility functions for checking dataset version compatibility
  */
 
+import { getHfAuthHeaders } from "./hfAuth";
+
 const DATASET_URL = process.env.DATASET_URL || "https://huggingface.co/datasets";
 
 /**
@@ -33,10 +35,12 @@ export async function getDatasetInfo(repoId: string): Promise<DatasetInfo> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
+    const headers = getHfAuthHeaders();
     const response = await fetch(testUrl, { 
       method: "GET",
       cache: "no-store",
-      signal: controller.signal
+      signal: controller.signal,
+      headers,
     });
     
     clearTimeout(timeoutId);
@@ -103,4 +107,3 @@ export async function getDatasetVersion(repoId: string): Promise<string> {
 export function buildVersionedUrl(repoId: string, version: string, path: string): string {
   return `${DATASET_URL}/${repoId}/resolve/main/${path}`;
 }
-
